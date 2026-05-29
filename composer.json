@@ -1,0 +1,47 @@
+{
+    "name": "ithilbert/ai-manifest",
+    "type": "library",
+    "license": "MIT",
+    "description": "AI-Agent Discovery für Laravel – Routes deklarieren ihre Capabilities direkt am Endpunkt via ->aiManifest().",
+    "keywords": [
+        "it-hilbert",
+        "laravel",
+        "ai-manifest",
+        "discovery",
+        "ai-agent"
+    ],
+    "authors": [{
+        "name": "Jörg Hilbert",
+        "homepage": "https://www.it-hilbert.com",
+        "role": "Developer"
+    }],
+    "homepage": "https://www.it-hilbert.com",
+    "minimum-stability": "stable",
+    "require": {
+        "php": "^8.5",
+        "illuminate/support": "^11.0 || ^12.0",
+        "illuminate/console": "^11.0 || ^12.0",
+        "illuminate/routing": "^11.0 || ^12.0",
+        "illuminate/filesystem": "^11.0 || ^12.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "ITHilbert\\AiManifest\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "ITHilbert\\AiManifest\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "ITHilbert\\AiManifest\\AiManifestServiceProvider"
+            ],
+            "aliases": {
+                "AiManifest": "ITHilbert\\AiManifest\\Facades\\AiManifest"
+            }
+        }
+    }
+}
