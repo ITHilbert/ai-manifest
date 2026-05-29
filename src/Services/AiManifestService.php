@@ -100,6 +100,37 @@ final class AiManifestService
     }
 
     /**
+     * Liefert einen stabilen MD5-Fingerprint über das gesamte Manifest (Kopf + Capabilities).
+     *
+     * Gleiche Routes und gleiche Kopf-Konfiguration → gleicher Hash.
+     * Ändert sich eine Route, die Konfiguration oder kommt eine neue Route hinzu → anderer Hash.
+     * Capabilities werden vor dem Hashen nach id/path sortiert, damit die Reihenfolge
+     * der Routen-Registrierung das Ergebnis nicht beeinflusst.
+     */
+    public function manifestFingerprint(): string
+    {
+        $manifest = $this->buildHead();
+
+        $rows = [];
+        foreach ($this->getCapabilities() as $entry) {
+            $rows[] = $entry->toArray();
+        }
+
+        usort($rows, static function (array $a, array $b): int {
+            $idCmp = strcmp((string) ($a['id'] ?? ''), (string) ($b['id'] ?? ''));
+            if ($idCmp !== 0) {
+                return $idCmp;
+            }
+
+            return strcmp((string) ($a['path'] ?? ''), (string) ($b['path'] ?? ''));
+        });
+
+        $manifest['capabilities'] = $rows;
+
+        return md5((string) json_encode($manifest, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
+    }
+
+    /**
      * Kompletter Manifest-Body als formatierter JSON-String.
      */
     public function toJson(): string

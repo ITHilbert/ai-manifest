@@ -17,8 +17,9 @@ final class AiManifestController
         $ttl = (int) config('ai-manifest.cache_ttl', 3600);
 
         if ($ttl > 0) {
+            $key = 'ai-manifest.payload.'.$this->service->manifestFingerprint();
             $payload = Cache::remember(
-                'ai-manifest.payload',
+                $key,
                 $ttl,
                 fn () => $this->service->toArray()
             );
