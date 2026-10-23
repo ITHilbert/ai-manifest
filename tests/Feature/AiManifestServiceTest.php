@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Route;
 use ITHilbert\AiManifest\Data\CapabilityEntry;
 use ITHilbert\AiManifest\Enums\Mechanism;
 use ITHilbert\AiManifest\Services\AiManifestService;
-use Tests\TestCase;
+use ITHilbert\AiManifest\Tests\TestCase;
 
 final class AiManifestServiceTest extends TestCase
 {

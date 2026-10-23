@@ -7,7 +7,7 @@ namespace ITHilbert\AiManifest\Tests\Feature;
 use Illuminate\Support\Facades\Route;
 use ITHilbert\AiManifest\Builders\AiManifestRouteBuilder;
 use ITHilbert\AiManifest\Enums\Mechanism;
-use Tests\TestCase;
+use ITHilbert\AiManifest\Tests\TestCase;
 
 final class AiManifestBuilderTest extends TestCase
 {
