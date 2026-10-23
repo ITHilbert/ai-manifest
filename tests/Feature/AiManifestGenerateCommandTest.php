@@ -6,7 +6,7 @@ namespace ITHilbert\AiManifest\Tests\Feature;
 
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Route;
-use Tests\TestCase;
+use ITHilbert\AiManifest\Tests\TestCase;
 
 final class AiManifestGenerateCommandTest extends TestCase
 {

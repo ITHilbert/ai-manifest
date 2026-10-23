@@ -7,7 +7,7 @@ namespace ITHilbert\AiManifest\Tests\Feature;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Route;
 use ITHilbert\AiManifest\Services\AiManifestService;
-use Tests\TestCase;
+use ITHilbert\AiManifest\Tests\TestCase;
 
 final class AiManifestCacheFingerprintTest extends TestCase
 {

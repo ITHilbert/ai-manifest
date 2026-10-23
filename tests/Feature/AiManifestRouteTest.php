@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace ITHilbert\AiManifest\Tests\Feature;
 
 use Illuminate\Support\Facades\Route;
-use Tests\TestCase;
+use ITHilbert\AiManifest\Tests\TestCase;
 
 final class AiManifestRouteTest extends TestCase
 {
