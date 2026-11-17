@@ -60,9 +60,9 @@ final class AiManifestService
 
             $meta = $action['ai_manifest_meta'];
 
-            $id = $meta['id']
-                ?? ($route->getName() !== null && $route->getName() !== '' ? $route->getName() : null)
-                ?? $this->buildDefaultId($route);
+            $id = isset($meta['id']) && $meta['id'] !== ''
+                ? $meta['id']
+                : ($route->getName() !== null && $route->getName() !== '' ? $route->getName() : $this->buildDefaultId($route));
 
             $mechanism = null;
             if (isset($meta['mechanism'])) {
@@ -99,7 +99,7 @@ final class AiManifestService
                     continue;
                 }
 
-                if (! isset($entry['id']) || ! isset($entry['path'])) {
+                if (! isset($entry['id'], $entry['path']) || (string) $entry['id'] === '' || (string) $entry['path'] === '') {
                     continue;
                 }
 

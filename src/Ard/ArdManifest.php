@@ -100,7 +100,7 @@ final readonly class ArdManifest
         $url = $roh['url'] ?? null;
         $data = $roh['data'] ?? null;
 
-        if (($url === null) === ($data === null) || ($url !== null && ! is_string($url)) || ($data !== null && ! is_array($data))) {
+        if (($url === null) === ($data === null) || ($url !== null && ! is_string($url)) || ($data !== null && (! is_array($data) || ($data !== [] && array_is_list($data))))) {
             return null;
         }
 
@@ -118,7 +118,7 @@ final readonly class ArdManifest
 
     /**
      * Angegebene Queries (nicht leer, ohne Dubletten, höchstens fünf);
-     * weniger als zwei: ersatzweise displayName und "<METHOD> <path>".
+     * weniger als zwei: ersatzweise displayName, "<METHOD> <path>", id und path (bis zwei Werte).
      *
      * @return list<string>
      */
@@ -130,7 +130,12 @@ final readonly class ArdManifest
             return $queries;
         }
 
-        return $this->ohneDubletten([$displayName, $capability->method.' '.$capability->path]);
+        return array_slice($this->ohneDubletten([
+            $displayName,
+            $capability->method.' '.$capability->path,
+            $capability->id,
+            $capability->path,
+        ]), 0, ArdFormat::QUERIES_MIN);
     }
 
     /**
