@@ -6,86 +6,77 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | App-Name im Manifest
+    | Name und Beschreibung
     |--------------------------------------------------------------------------
-    | null → fällt auf config('app.name') zurück.
+    | Für die erzeugte llms.txt (Überschrift und Zitatzeile).
+    | name: null → config('app.name').
     */
     'name' => null,
 
-    /*
-    |--------------------------------------------------------------------------
-    | Beschreibung
-    |--------------------------------------------------------------------------
-    */
     'description' => '',
 
     /*
     |--------------------------------------------------------------------------
-    | Manifest-Version
+    | Publisher im identifier (urn:air:<publisher>:<namespace>:<name>)
     |--------------------------------------------------------------------------
+    | null → Host aus config('app.url') in Kleinbuchstaben ohne Port,
+    | ohne Host 'localhost'.
     */
-    'version' => '1.0',
+    'publisher' => null,
 
     /*
     |--------------------------------------------------------------------------
-    | Auth-Konfiguration
+    | Namespace der Einträge aus Routen und Generatoren
     |--------------------------------------------------------------------------
-    | type: none | bearer | basic | oauth2
     */
-    'auth' => [
-        'type' => 'bearer',
-        'token_endpoint' => '/api/token',
+    'namespace' => 'routes',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Manuelle ARD-Einträge
+    |--------------------------------------------------------------------------
+    | Je Eintrag Pflicht: name, displayName, type und genau eines von url/data.
+    | Weitere Schlüssel des Schemas (representativeQueries, description, tags …)
+    | gehen unverändert durch. Unvollständige Einträge werden verworfen.
+    | entries_namespace: Namespace-Teil ihres identifier.
+    */
+    'entries_namespace' => 'site',
+
+    'entries' => [],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Übergangspfad /.well-known/ai-catalog.json
+    |--------------------------------------------------------------------------
+    | Gleicher Inhalt wie /.well-known/ard.json. Rückbau, sobald PageSpeed
+    | Insights ard.json bewertet (Dashboard #1433).
+    */
+    'ai_catalog_legacy' => filter_var(env('AI_MANIFEST_LEGACY_AI_CATALOG', true), FILTER_VALIDATE_BOOLEAN),
+
+    /*
+    |--------------------------------------------------------------------------
+    | llms.txt
+    |--------------------------------------------------------------------------
+    | Vorrang: datei (absoluter Pfad zu einer Markdown-Datei) > inhalt (String)
+    | > erzeugt aus name/description und links ([title, url, desc?]).
+    | Nichts davon gesetzt oder Datei nicht lesbar → /llms.txt antwortet 404.
+    */
+    'llms_txt' => [
+        'datei' => null,
+        'inhalt' => null,
+        'links' => [],
     ],
 
     /*
     |--------------------------------------------------------------------------
-    | Mechanismen
+    | Middleware für alle Routen des Pakets (ard.json, ai-catalog.json, llms.txt)
     |--------------------------------------------------------------------------
-    | Manuell gepflegte Liste der angebotenen Mechanismen.
-    | Beispiel:
-    |   ['type' => 'http_api', 'base' => '/api', 'schema' => '/.well-known/openapi.json'],
-    |   ['type' => 'mcp', 'url' => 'https://example.com/mcp'],
-    */
-    'mechanisms' => [],
-
-    /*
-    |--------------------------------------------------------------------------
-    | Rate-Limits
-    |--------------------------------------------------------------------------
-    | null = keine Rate-Limit-Angabe im Manifest
-    | Beispiel: ['requests_per_minute' => 60]
-    */
-    'rate_limits' => null,
-
-    /*
-    |--------------------------------------------------------------------------
-    | Kontakt
-    |--------------------------------------------------------------------------
-    | null = kein Kontakt-Feld im Manifest
-    | Beispiel: ['email' => 'api@example.com', 'url' => 'https://example.com/support']
-    */
-    'contact' => null,
-
-    /*
-    |--------------------------------------------------------------------------
-    | Öffentliche Verfügbarkeit
-    |--------------------------------------------------------------------------
-    | true  = Manifest ohne Auth erreichbar (Cold-Discovery für unbekannte Agenten)
-    | false = Route wird trotzdem registriert; Zugriff über middleware steuern
-    */
-    'public' => true,
-
-    /*
-    |--------------------------------------------------------------------------
-    | Middleware für die Manifest-Route
-    |--------------------------------------------------------------------------
-    | Wird immer angewandt. Beispiel: ['auth:sanctum']
     */
     'middleware' => [],
 
     /*
     |--------------------------------------------------------------------------
-    | Cache TTL (Sekunden)
+    | Cache TTL (Sekunden) für den ARD-Body
     |--------------------------------------------------------------------------
     | 0 = kein Caching, immer live generieren
     */

@@ -5,56 +5,59 @@ declare(strict_types=1);
 namespace ITHilbert\AiManifest\Tests\Feature;
 
 use Illuminate\Filesystem\Filesystem;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
+use ITHilbert\AiManifest\Facades\AiManifest;
 use ITHilbert\AiManifest\Tests\TestCase;
 
 final class AiManifestGenerateCommandTest extends TestCase
 {
-    private string $tempFile;
+    private string $verzeichnis;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        config()->set('ai-manifest.name', 'TestApp');
-        config()->set('ai-manifest.description', '');
-        config()->set('ai-manifest.version', '1.0');
-        config()->set('ai-manifest.auth', []);
-        config()->set('ai-manifest.mechanisms', []);
-        config()->set('ai-manifest.rate_limits', null);
-        config()->set('ai-manifest.contact', null);
+        config()->set('ai-manifest.cache_ttl', 0);
+        config()->set('ai-manifest.publisher', 'shop.example');
 
-        $this->tempFile = sys_get_temp_dir().'/ai-manifest-test-'.uniqid('', true).'/ai-manifest.json';
+        $this->verzeichnis = sys_get_temp_dir().'/ai-manifest-test-'.uniqid('', true);
+        (new Filesystem)->makeDirectory($this->verzeichnis, 0755, true);
+
+        Route::get('/api/items', fn () => 'x')->name('items.index')->aiManifest()->summary('Alle Items auflisten');
+        Route::get('/api/more', fn () => 'x')->name('items.more')->aiManifest();
+        AiManifest::addGenerator(fn () => [['id' => 'gen.eins', 'path' => '/api/gen']]);
     }
 
     protected function tearDown(): void
     {
-        $dir = dirname($this->tempFile);
-        (new Filesystem)->deleteDirectory($dir);
+        (new Filesystem)->deleteDirectory($this->verzeichnis);
         parent::tearDown();
     }
 
-    public function test_command_writes_valid_json_file_with_capabilities(): void
+    // AK10
+    public function test_befehl_schreibt_body_von_ard_json_nach_path_und_meldet_die_anzahl(): void
     {
-        Route::get('/api/items', fn () => 'x')
-            ->name('items.index')
-            ->aiManifest()
-            ->summary('Alle Items auflisten');
+        $ziel = $this->verzeichnis.'/neu/ard.json';
 
-        $exit = $this->artisan('ai-manifest:generate', ['--path' => $this->tempFile])->run();
+        $exit = Artisan::call('ai-manifest:generate', ['--path' => $ziel]);
 
         $this->assertSame(0, $exit);
-        $this->assertFileExists($this->tempFile);
+        $this->assertFileExists($ziel);
+        $erwartet = $this->get('/.well-known/ard.json')->json();
+        $this->assertCount(3, $erwartet['entries']);
+        $this->assertSame($erwartet, json_decode((string) file_get_contents($ziel), true));
+        $this->assertMatchesRegularExpression('/(?<![\w.-])3(?![\w.-])/', str_replace($ziel, '', Artisan::output()));
+    }
 
-        $content = file_get_contents($this->tempFile);
-        $this->assertIsString($content);
+    // AK10
+    public function test_ohne_path_entsteht_ard_json_in_public_und_ai_manifest_json_nicht(): void
+    {
+        $this->app->usePublicPath($this->verzeichnis);
 
-        $json = json_decode($content, true);
-        $this->assertIsArray($json);
-        $this->assertArrayHasKey('capabilities', $json);
-        $this->assertNotEmpty($json['capabilities']);
+        $this->assertSame(0, Artisan::call('ai-manifest:generate'));
 
-        $ids = array_column($json['capabilities'], 'id');
-        $this->assertContains('items.index', $ids);
+        $this->assertFileExists($this->verzeichnis.'/.well-known/ard.json');
+        $this->assertFileDoesNotExist($this->verzeichnis.'/.well-known/ai-manifest.json');
     }
 }

@@ -76,6 +76,16 @@ final class AiManifestRouteBuilder
     }
 
     /**
+     * Beispielfragen eines Agenten zu dieser Route (ARD: representativeQueries, 2 bis 5).
+     *
+     * @param  array<array-key, string>  $queries
+     */
+    public function queries(array $queries): static
+    {
+        return $this->setMeta('queries', array_values($queries));
+    }
+
+    /**
      * Gibt die Route zurück.
      */
     public function __invoke(): Route

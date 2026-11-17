@@ -10,6 +10,7 @@ final readonly class CapabilityEntry
 {
     /**
      * @param  list<CapabilityParam>  $params
+     * @param  list<string>  $queries  Beispielfragen für ARD (representativeQueries), nicht Teil von toArray()
      */
     public function __construct(
         public string $id,
@@ -19,6 +20,7 @@ final readonly class CapabilityEntry
         public bool $auth = false,
         public array $params = [],
         public ?Mechanism $mechanism = null,
+        public array $queries = [],
     ) {}
 
     /**

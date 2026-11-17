@@ -6,8 +6,10 @@ namespace ITHilbert\AiManifest;
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
+use ITHilbert\AiManifest\Ard\ArdFormat;
 use ITHilbert\AiManifest\Commands\AiManifestGenerateCommand;
-use ITHilbert\AiManifest\Http\AiManifestController;
+use ITHilbert\AiManifest\Http\ArdManifestController;
+use ITHilbert\AiManifest\Http\LlmsTxtController;
 use ITHilbert\AiManifest\Macros\RouteAiManifestMacro;
 use ITHilbert\AiManifest\Services\AiManifestService;
 
@@ -17,13 +19,10 @@ class AiManifestServiceProvider extends ServiceProvider
     {
         RouteAiManifestMacro::register();
 
-        $middleware = (array) config('ai-manifest.middleware', []);
+        $this->loadViewsFrom(__DIR__.'/Resources/views', 'ai-manifest');
 
-        $route = Route::get('/.well-known/ai-manifest.json', AiManifestController::class)
-            ->name('ai-manifest');
-
-        if (! empty($middleware)) {
-            $route->middleware($middleware);
+        if (! $this->app->routesAreCached()) {
+            $this->registerRoutes();
         }
 
         if ($this->app->runningInConsole()) {
@@ -44,5 +43,21 @@ class AiManifestServiceProvider extends ServiceProvider
 
         $this->app->singleton(AiManifestService::class);
         $this->app->alias(AiManifestService::class, 'AiManifest');
+    }
+
+    /**
+     * Alle Routen des Pakets tragen die Middleware aus der Config.
+     */
+    private function registerRoutes(): void
+    {
+        Route::middleware((array) config('ai-manifest.middleware', []))->group(function (): void {
+            Route::get(ArdFormat::PFAD_ARD, ArdManifestController::class)->name('ai-manifest.ard');
+
+            if ((bool) config('ai-manifest.ai_catalog_legacy', true)) {
+                Route::get(ArdFormat::PFAD_AI_CATALOG, ArdManifestController::class)->name('ai-manifest.ai-catalog');
+            }
+
+            Route::get('/llms.txt', LlmsTxtController::class)->name('ai-manifest.llms-txt');
+        });
     }
 }
