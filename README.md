@@ -8,6 +8,7 @@ Laravel-Package für die Auffindbarkeit einer Website durch KI-Agenten:
 
 Lighthouse prüft beides in der Kategorie „Agentic Browsing“ (Audits `ard-schema` und `llms-txt`).
 Warum ARD statt des früheren eigenen Formats: Entscheidung [0001](.project/doku/decisions/0001-ard-statt-eigenem-format.md).
+Änderungen je Version stehen in [CHANGELOG.md](CHANGELOG.md).
 
 ## Installation
 
