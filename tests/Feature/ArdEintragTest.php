@@ -332,7 +332,8 @@ final class ArdEintragTest extends TestCase
         $this->assertSame('routes', $config['namespace']);
         $this->assertSame('site', $config['entries_namespace']);
         $this->assertSame([], $config['entries']);
-        $this->assertTrue($config['ai_catalog_legacy']);
+        $this->assertArrayNotHasKey('ai_catalog_legacy', $config);
+        $this->assertArrayNotHasKey('ai_catalog_legacy', $standard);
         $this->assertIsArray($config['llms_txt']);
         foreach (['datei', 'inhalt', 'links'] as $schluessel) {
             $this->assertArrayHasKey($schluessel, $config['llms_txt']);

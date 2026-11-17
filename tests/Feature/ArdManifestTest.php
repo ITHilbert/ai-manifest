@@ -7,13 +7,14 @@ namespace ITHilbert\AiManifest\Tests\Feature;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use ITHilbert\AiManifest\Ard\ArdFormat;
 use ITHilbert\AiManifest\Tests\TestCase;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Schnittstelle fuer den Coder (nur was die Spec nicht vorgibt):
- * - Config wird beim Booten des Providers gelesen (middleware, ai_catalog_legacy); die Tests setzen sie
- *   in defineEnvironment bzw. nicht zur Laufzeit; der env-Name AI_MANIFEST_LEGACY_AI_CATALOG wird an der Config-Datei geprueft.
+ * - Config wird beim Booten des Providers gelesen (middleware); die Tests setzen sie in defineEnvironment.
+ * - AK7: der alte env-Name AI_MANIFEST_LEGACY_AI_CATALOG und der alte Config-Schluessel werden gesetzt und duerfen nichts mehr bewirken.
  * - Config `llms_txt` ist ein Array mit den Schluesseln datei, inhalt, links (Standard null, null, []).
  * - Der Body von ard.json ist ein JSON-Objekt; ohne Eintraege exakt {"entries":[]} (Liste, kein Objekt).
  */
@@ -29,8 +30,9 @@ final class ArdManifestTest extends TestCase
         // llms.txt konfiguriert, damit auch diese Route eine 200-Antwort mit Markierung liefert
         $app['config']->set('ai-manifest.llms_txt', ['datei' => null, 'inhalt' => '# Test', 'links' => []]);
 
-        if ($this->name() === 'test_config_false_schaltet_uebergangspfad_ab') {
-            $app['config']->set('ai-manifest.ai_catalog_legacy', false);
+        if ($this->name() === 'test_ai_catalog_json_ist_404_trotz_gesetzter_env_und_config') {
+            putenv(self::ENV_LEGACY.'=true');
+            $app['config']->set('ai-manifest.ai_catalog_legacy', true);
         }
     }
 
@@ -59,8 +61,7 @@ final class ArdManifestTest extends TestCase
 
         $this->get('/.well-known/ai-manifest.json')->assertNotFound();
 
-        // Randfall 4: Uebergangspfad und llms.txt haben dieselbe Middleware
-        $this->get('/.well-known/ai-catalog.json')->assertOk()->assertHeader('X-Ard-Test', '1');
+        // llms.txt hat dieselbe Middleware
         $this->get('/llms.txt')->assertOk()->assertHeader('X-Ard-Test', '1');
 
         // Gegenprobe: eine fremde Route des Hosts bekommt die Markierung nicht
@@ -78,42 +79,27 @@ final class ArdManifestTest extends TestCase
     }
 
     // AK7
-    public function test_uebergangspfad_liefert_denselben_body_und_content_type(): void
+    public function test_ai_catalog_json_ist_404_trotz_gesetzter_env_und_config(): void
     {
-        Route::get('/api/items', fn () => 'x')->name('items.index')->aiManifest()->summary('Items');
-
-        $ard = $this->get('/.well-known/ard.json');
-        $legacy = $this->get('/.well-known/ai-catalog.json');
-
-        $legacy->assertOk();
-        $this->assertNotEmpty($ard->json('entries'));
-        $this->assertSame($ard->json(), $legacy->json());
-        $this->assertSame($ard->headers->get('Content-Type'), $legacy->headers->get('Content-Type'));
-        $this->assertSame('/.well-known/ai-catalog.json', route('ai-manifest.ai-catalog', [], false));
-    }
-
-    // AK7
-    public function test_config_false_schaltet_uebergangspfad_ab(): void
-    {
-        // Gegenprobe: ard.json bleibt erreichbar
+        // Gegenprobe: ard.json ist erreichbar, der alte Pfad nicht
         $this->get('/.well-known/ard.json')->assertOk();
 
         $this->get('/.well-known/ai-catalog.json')->assertNotFound();
     }
 
     // AK7
-    public function test_env_name_steuert_ai_catalog_legacy_in_der_config_datei(): void
+    public function test_route_konstante_und_config_schluessel_des_uebergangspfads_gibt_es_nicht(): void
     {
-        $datei = __DIR__.'/../../src/Config/ai-manifest.php';
+        // Gegenprobe: die ARD-Route und ihre Konstante existieren
+        $this->assertTrue(Route::has('ai-manifest.ard'));
+        $this->assertTrue(defined(ArdFormat::class.'::PFAD_ARD'));
 
-        putenv(self::ENV_LEGACY);
-        $this->assertTrue((require $datei)['ai_catalog_legacy']);
+        $this->assertFalse(Route::has('ai-manifest.ai-catalog'));
+        $this->assertFalse(defined(ArdFormat::class.'::PFAD_AI_CATALOG'));
 
-        putenv(self::ENV_LEGACY.'=false');
-        $this->assertFalse((require $datei)['ai_catalog_legacy']);
-
-        putenv(self::ENV_LEGACY.'=true');
-        $this->assertTrue((require $datei)['ai_catalog_legacy']);
+        $standard = require __DIR__.'/../../src/Config/ai-manifest.php';
+        $this->assertArrayHasKey('middleware', $standard);
+        $this->assertArrayNotHasKey('ai_catalog_legacy', $standard);
     }
 }
 

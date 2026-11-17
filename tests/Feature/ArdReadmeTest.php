@@ -26,9 +26,9 @@ final class ArdReadmeTest extends TestCase
         foreach ([
             '/.well-known/ard.json', 'application/vnd.ithilbert.ai-manifest-capability+json',
             '->queries(', 'representativeQueries',
-            'publisher', 'entries_namespace', 'ai_catalog_legacy', 'AI_MANIFEST_LEGACY_AI_CATALOG',
+            'publisher', 'entries_namespace',
             'llms_txt', 'datei', 'inhalt', 'links',
-            '<x-ai-manifest::ard-link', 'rel="ard"', 'llms.txt', '/.well-known/ai-catalog.json',
+            '<x-ai-manifest::ard-link', 'rel="ard"', 'llms.txt',
             '0001',
         ] as $begriff) {
             $this->assertStringContainsString($begriff, $readme, "README nennt '{$begriff}' nicht");
@@ -39,14 +39,27 @@ final class ArdReadmeTest extends TestCase
         // AK12: cache_ttl ist kein Config-Schluessel mehr (weder Tabellenzeile noch unter "Bleibt:")
         $this->assertDoesNotMatchRegularExpression('/^\|\s*`cache_ttl`/m', $readme);
         $this->assertDoesNotMatchRegularExpression('/Bleibt:.{0,400}`cache_ttl`/su', $readme);
+        // AK7: Config-Schluessel und env des Uebergangspfads stehen nicht mehr in der Config-Doku
+        $this->assertDoesNotMatchRegularExpression('/^\|\s*`ai_catalog_legacy`/m', $readme);
+        $this->assertStringNotContainsString('AI_MANIFEST_LEGACY_AI_CATALOG=false', $readme);
+        $this->assertDoesNotMatchRegularExpression('/Rückbau-Bedingung/u', $readme);
+        $this->assertDoesNotMatchRegularExpression('/Neu:.{0,300}ai_catalog_legacy/su', $readme);
     }
 
-    // AK13
-    public function test_readme_nennt_uebergangspfad_rueckbau_leere_liste_und_umstieg(): void
+    // AK13, AK7
+    public function test_readme_nennt_uebergangspfad_nur_als_entfallen_leere_liste_und_umstieg(): void
     {
         $readme = $this->readme();
 
-        $this->assertMatchesRegularExpression('/ai-catalog\.json.{0,600}(PageSpeed|Rückbau)|(PageSpeed|Rückbau).{0,600}ai-catalog\.json/su', $readme);
+        // AK7: jede Nennung von ai-catalog.json liegt im Abschnitt Umstieg 1.x/2.0 -> 2.1 und steht dort als entfallen
+        $this->assertStringContainsString('ai-catalog.json', $readme);
+        $this->assertMatchesRegularExpression('/(ai-catalog\.json.{0,300}entfällt|entfällt.{0,300}ai-catalog\.json)/su', $readme);
+        $teile = preg_split('/^##\s+[^\n]*Umstieg[^\n]*$/mu', $readme, 2);
+        $this->assertCount(2, $teile, 'Abschnitt Umstieg fehlt');
+        $umstieg = preg_split('/^## /m', $teile[1], 2)[0];
+        $ausserhalb = str_replace($umstieg, '', $readme);
+        $this->assertStringContainsString('ai-catalog.json', $umstieg);
+        $this->assertStringNotContainsString('ai-catalog.json', $ausserhalb);
         $this->assertMatchesRegularExpression('/Firmen-Website.{0,600}(leere Liste|\{"entries":\s*\[\]\})|(leere Liste|\{"entries":\s*\[\]\}).{0,600}Firmen-Website/su', $readme);
         $this->assertMatchesRegularExpression('/1\.x.{0,500}2\.0|2\.0.{0,500}1\.x/su', $readme);
         $this->assertMatchesRegularExpression('/(ai-manifest\.json.{0,300}entfällt|entfällt.{0,300}ai-manifest\.json)/su', $readme);
