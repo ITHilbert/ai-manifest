@@ -18,7 +18,6 @@ final class AiManifestGenerateCommandTest extends TestCase
     {
         parent::setUp();
 
-        config()->set('ai-manifest.cache_ttl', 0);
         config()->set('ai-manifest.publisher', 'shop.example');
 
         $this->verzeichnis = sys_get_temp_dir().'/ai-manifest-test-'.uniqid('', true);

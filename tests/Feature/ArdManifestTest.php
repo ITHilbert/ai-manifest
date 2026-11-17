@@ -28,7 +28,6 @@ final class ArdManifestTest extends TestCase
         $app['config']->set('ai-manifest.middleware', [ArdTestMarkierer::class]);
         // llms.txt konfiguriert, damit auch diese Route eine 200-Antwort mit Markierung liefert
         $app['config']->set('ai-manifest.llms_txt', ['datei' => null, 'inhalt' => '# Test', 'links' => []]);
-        $app['config']->set('ai-manifest.cache_ttl', 0);
 
         if ($this->name() === 'test_config_false_schaltet_uebergangspfad_ab') {
             $app['config']->set('ai-manifest.ai_catalog_legacy', false);

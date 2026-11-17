@@ -227,9 +227,8 @@ die Routen des Pakets kommen dann nicht zum Zug. Das Paket ändert daran nichts.
 | `ai_catalog_legacy` | `true` (env `AI_MANIFEST_LEGACY_AI_CATALOG`) | Übergangspfad `/.well-known/ai-catalog.json` an/aus |
 | `llms_txt` | `['datei' => null, 'inhalt' => null, 'links' => []]` | Quelle der llms.txt |
 | `middleware` | `[]` | Middleware für alle Routen des Pakets, z. B. `['throttle:60,1']` |
-| `cache_ttl` | `3600` | Cache des ARD-Bodys in Sekunden; `0` = kein Cache |
 
-Der Cache-Schlüssel enthält den Fingerabdruck des Bodys: Eine geänderte Route oder Config erscheint sofort.
+Der ARD-Body wird bei jedem Abruf frisch gebaut, es gibt keinen Cache: Eine geänderte Route oder Config erscheint sofort.
 
 ## Übergangspfad `/.well-known/ai-catalog.json`
 
@@ -271,7 +270,7 @@ Version 2.0 ersetzt das eigene Format durch ARD. Was entfällt:
   Den Body baut `ITHilbert\AiManifest\Ard\ArdManifest::body()`.
 
 Bleibt: `->aiManifest()` mit allen Settern, `AiManifest::addGenerator`/`clearGenerators`/`getCapabilities`, `name`, `description`,
-`middleware`, `cache_ttl` und der Enum `Mechanism` (Feld `mechanism` in `data`). Neu: `->queries()`, `publisher`, `namespace`,
+`middleware` und der Enum `Mechanism` (Feld `mechanism` in `data`). Neu: `->queries()`, `publisher`, `namespace`,
 `entries_namespace`, `entries`, `ai_catalog_legacy`, `llms_txt`, die Link-Komponente und `/llms.txt`.
 
 Hintergrund: Entscheidung [0001 — ARD statt eigenem Format](.project/doku/decisions/0001-ard-statt-eigenem-format.md).

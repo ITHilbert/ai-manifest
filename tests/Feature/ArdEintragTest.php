@@ -30,7 +30,6 @@ final class ArdEintragTest extends TestCase
     {
         parent::setUp();
 
-        config()->set('ai-manifest.cache_ttl', 0);
         config()->set('ai-manifest.publisher', 'shop.example');
     }
 
@@ -338,9 +337,12 @@ final class ArdEintragTest extends TestCase
         foreach (['datei', 'inhalt', 'links'] as $schluessel) {
             $this->assertArrayHasKey($schluessel, $config['llms_txt']);
         }
-        foreach (['name', 'description', 'middleware', 'cache_ttl'] as $bleibend) {
+        foreach (['name', 'description', 'middleware'] as $bleibend) {
             $this->assertArrayHasKey($bleibend, $config);
         }
+        // Gegenprobe oben: die Config ist geladen; cache_ttl entfaellt (auch im Standard der Config-Datei)
+        $this->assertArrayNotHasKey('cache_ttl', $config);
+        $this->assertArrayNotHasKey('cache_ttl', $standard);
         foreach (['version', 'auth', 'mechanisms', 'rate_limits', 'contact', 'public'] as $entfallen) {
             $this->assertArrayNotHasKey($entfallen, $config);
         }

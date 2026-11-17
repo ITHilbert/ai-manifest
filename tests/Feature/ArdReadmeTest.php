@@ -16,7 +16,7 @@ final class ArdReadmeTest extends TestCase
         return (string) file_get_contents(dirname(__DIR__, 2).'/README.md');
     }
 
-    // AK13
+    // AK13, AK12
     public function test_readme_dokumentiert_route_eintrag_config_komponente_und_llms_txt(): void
     {
         $readme = $this->readme();
@@ -33,9 +33,12 @@ final class ArdReadmeTest extends TestCase
         ] as $begriff) {
             $this->assertStringContainsString($begriff, $readme, "README nennt '{$begriff}' nicht");
         }
-        foreach (['namespace', 'entries', 'cache_ttl', 'middleware'] as $schluessel) {
+        foreach (['namespace', 'entries', 'middleware'] as $schluessel) {
             $this->assertMatchesRegularExpression('/`'.$schluessel.'`/', $readme, "Config-Schluessel {$schluessel} nicht dokumentiert");
         }
+        // AK12: cache_ttl ist kein Config-Schluessel mehr (weder Tabellenzeile noch unter "Bleibt:")
+        $this->assertDoesNotMatchRegularExpression('/^\|\s*`cache_ttl`/m', $readme);
+        $this->assertDoesNotMatchRegularExpression('/Bleibt:.{0,400}`cache_ttl`/su', $readme);
     }
 
     // AK13

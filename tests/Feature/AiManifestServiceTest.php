@@ -21,7 +21,6 @@ final class AiManifestServiceTest extends TestCase
     {
         parent::setUp();
 
-        config()->set('ai-manifest.cache_ttl', 0);
         config()->set('ai-manifest.publisher', 'shop.example');
     }
 
