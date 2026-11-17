@@ -28,3 +28,8 @@ Branch `fix/ard-nacharbeit`. Spec-Lücke AK14 (Punkte 1–3) selbst freigegeben;
 Offener Punkt a1b2a3651f87ffedb: keine
 Abweichung a1b2a3651f87ffedb: keine (Fehlalarm: Abweichungen-Zeile des Berichts lautet „keine“)
 Review: entfällt (Bugfix/Spec-Lücke ohne Sicherheitsbezug, kleine Änderung; Rule agent-lifecycle.md)
+
+## Nachbesserung 2026-11-17 (automode): #1444 Punkt 4 (Cache entfernen, Entscheidung Joerg: A)
+Branch `fix/ard-cache-entfernen`. Spec: AK11 ersetzt („Kein Cache“), AK12 ohne `cache_ttl` (Spec-Änderung nach Entscheidung des Users, Task-Protokoll #3111).
+- [ ] test-writer (AK11, AK12) — Tests: `tests/Feature/AiManifestCacheFingerprintTest.php`, `tests/Feature/ArdEintragTest.php`, `tests/Feature/ArdReadmeTest.php`; `abdeckung.md` AK11/AK12 nachziehen
+- [ ] [pro] Controller ohne Cache, `ArdManifest::fingerabdruck()` und Config `cache_ttl` entfernen, README und CHANGELOG nachziehen — Tests: dieselben Dateien plus `tests/Feature/ArdManifestTest.php`, `tests/Feature/AiManifestServiceTest.php`, `tests/Feature/AiManifestGenerateCommandTest.php`
