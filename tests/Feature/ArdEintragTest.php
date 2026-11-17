@@ -266,6 +266,61 @@ final class ArdEintragTest extends TestCase
         ], $identifier);
     }
 
+    // AK14 (a)
+    public function test_ersatz_queries_ergaenzen_id_und_path_bis_zwei_werte(): void
+    {
+        // displayName = "GET /api/k" faellt mit dem ersten Ersatzwert zusammen -> nur ein Wert
+        Route::get('/api/k', fn () => 'x')->name('k')->aiManifest()->summary('GET /api/k');
+        // Gegenprobe: ohne Kollision bleibt es bei displayName und "<METHOD> <path>"
+        Route::get('/api/andere', fn () => 'x')->name('andere')->aiManifest()->summary('Andere');
+
+        $this->assertSame(['GET /api/k', 'k'], $this->ardEintrag('k')['representativeQueries']);
+        $this->assertSame(['Andere', 'GET /api/andere'], $this->ardEintrag('andere')['representativeQueries']);
+    }
+
+    // AK14 (b)
+    public function test_leere_id_faellt_zurueck_und_generator_mit_leerer_id_oder_path_wird_verworfen(): void
+    {
+        Route::get('/api/leer', fn () => 'x')->name('leer.route')->aiManifest()->id('');
+        Route::get('/api/ohnename', fn () => 'x')->aiManifest()->id('');
+        AiManifest::addGenerator(fn () => [
+            ['id' => 'gen.gut', 'path' => '/api/gut'],
+            ['id' => '', 'path' => '/api/leere-id'],
+            ['id' => 'gen.leerer.pfad', 'path' => ''],
+        ]);
+
+        $eintraege = $this->ardEintraege();
+        $this->assertCount(3, $eintraege, json_encode($eintraege));
+        $this->assertSame('leer.route', $this->ardEintrag('leer.route')['data']['id']);
+        $this->assertSame('leer.route', $this->ardEintrag('leer.route')['displayName']);
+        $this->assertSame('get:/api/ohnename', $this->ardEintrag('get--api-ohnename')['displayName']);
+        $this->assertSame('gen.gut', $this->ardEintrag('gen.gut')['displayName']);
+        foreach ($eintraege as $eintrag) {
+            $this->assertNotSame('', $eintrag['displayName']);
+        }
+    }
+
+    // AK14 (c)
+    public function test_manueller_eintrag_mit_data_als_liste_wird_verworfen_und_leeres_data_bleibt_objekt(): void
+    {
+        config()->set('ai-manifest.entries', [
+            ['name' => 'objekt', 'displayName' => 'Objekt', 'type' => 't', 'data' => ['a' => 1]],
+            ['name' => 'leer', 'displayName' => 'Leer', 'type' => 't', 'data' => []],
+            ['name' => 'liste', 'displayName' => 'Liste', 'type' => 't', 'data' => ['x', 'y']],
+        ]);
+
+        $identifier = array_column($this->ardEintraege(), 'identifier');
+        sort($identifier);
+        $this->assertSame([
+            'urn:air:shop.example:site:leer',
+            'urn:air:shop.example:site:objekt',
+        ], $identifier);
+
+        $body = $this->get('/.well-known/ard.json')->getContent();
+        $this->assertStringContainsString('"data":{}', $body);
+        $this->assertStringNotContainsString('"data":[]', $body);
+    }
+
     // AK12
     public function test_config_traegt_neue_schluessel_und_nicht_mehr_die_alten(): void
     {
