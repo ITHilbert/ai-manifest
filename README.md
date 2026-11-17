@@ -35,7 +35,6 @@ php artisan vendor:publish --tag=ai-manifest-config
 | Pfad | Routenname | Content-Type |
 |---|---|---|
 | `/.well-known/ard.json` | `ai-manifest.ard` | `application/ai-catalog+json; charset=utf-8` |
-| `/.well-known/ai-catalog.json` | `ai-manifest.ai-catalog` | wie `ard.json` (Übergangspfad, siehe unten) |
 | `/llms.txt` | `ai-manifest.llms-txt` | `text/plain; charset=utf-8` |
 
 Alle drei tragen die Middleware aus `middleware` in der Config.
@@ -224,17 +223,10 @@ die Routen des Pakets kommen dann nicht zum Zug. Das Paket ändert daran nichts.
 | `namespace` | `'routes'` | Namespace der Einträge aus Routen und Generatoren |
 | `entries_namespace` | `'site'` | Namespace der manuellen Einträge |
 | `entries` | `[]` | Manuelle ARD-Einträge (siehe oben) |
-| `ai_catalog_legacy` | `true` (env `AI_MANIFEST_LEGACY_AI_CATALOG`) | Übergangspfad `/.well-known/ai-catalog.json` an/aus |
 | `llms_txt` | `['datei' => null, 'inhalt' => null, 'links' => []]` | Quelle der llms.txt |
 | `middleware` | `[]` | Middleware für alle Routen des Pakets, z. B. `['throttle:60,1']` |
 
 Der ARD-Body wird bei jedem Abruf frisch gebaut, es gibt keinen Cache: Eine geänderte Route oder Config erscheint sofort.
-
-## Übergangspfad `/.well-known/ai-catalog.json`
-
-Liefert denselben Body und Content-Type wie `ard.json`. Lighthouse 13.6 prüft `ard.json` zuerst; der alte Name dient nur dem Fall,
-dass PageSpeed Insights noch ihn prüft. Abschalten mit `AI_MANIFEST_LEGACY_AI_CATALOG=false`, dann ist der Pfad 404.
-Rückbau-Bedingung: Sobald PageSpeed Insights `ard.json` bewertet, entfällt der Pfad (Dashboard #1433).
 
 ## Sicherheit & Exposure
 
@@ -268,10 +260,11 @@ Version 2.0 ersetzt das eigene Format durch ARD. Was entfällt:
 - Config-Schlüssel `version`, `auth`, `mechanisms`, `rate_limits`, `contact`, `public` entfallen. Zugriff steuert nur noch `middleware`.
 - `AiManifestService::toArray()`, `toJson()`, `buildHead()` (und die gleichnamigen Facade-Methoden) entfallen.
   Den Body baut `ITHilbert\AiManifest\Ard\ArdManifest::body()`.
+- Mit 2.1 entfällt außerdem der kurzzeitige Übergangspfad `/.well-known/ai-catalog.json` samt Route `ai-manifest.ai-catalog` und Config `ai_catalog_legacy` (env `AI_MANIFEST_LEGACY_AI_CATALOG`); er antwortet 404, maßgeblich ist `/.well-known/ard.json`.
 
 Bleibt: `->aiManifest()` mit allen Settern, `AiManifest::addGenerator`/`clearGenerators`/`getCapabilities`, `name`, `description`,
 `middleware` und der Enum `Mechanism` (Feld `mechanism` in `data`). Neu: `->queries()`, `publisher`, `namespace`,
-`entries_namespace`, `entries`, `ai_catalog_legacy`, `llms_txt`, die Link-Komponente und `/llms.txt`.
+`entries_namespace`, `entries`, `llms_txt`, die Link-Komponente und `/llms.txt`.
 
 Hintergrund: Entscheidung [0001 — ARD statt eigenem Format](.project/doku/decisions/0001-ard-statt-eigenem-format.md).
 

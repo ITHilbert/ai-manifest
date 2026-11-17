@@ -46,15 +46,6 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Übergangspfad /.well-known/ai-catalog.json
-    |--------------------------------------------------------------------------
-    | Gleicher Inhalt wie /.well-known/ard.json. Rückbau, sobald PageSpeed
-    | Insights ard.json bewertet (Dashboard #1433).
-    */
-    'ai_catalog_legacy' => filter_var(env('AI_MANIFEST_LEGACY_AI_CATALOG', true), FILTER_VALIDATE_BOOLEAN),
-
-    /*
-    |--------------------------------------------------------------------------
     | llms.txt
     |--------------------------------------------------------------------------
     | Vorrang: datei (absoluter Pfad zu einer Markdown-Datei) > inhalt (String)
@@ -69,7 +60,7 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Middleware für alle Routen des Pakets (ard.json, ai-catalog.json, llms.txt)
+    | Middleware für alle Routen des Pakets (ard.json, llms.txt)
     |--------------------------------------------------------------------------
     */
     'middleware' => [],

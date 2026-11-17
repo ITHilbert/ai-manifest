@@ -53,10 +53,6 @@ class AiManifestServiceProvider extends ServiceProvider
         Route::middleware((array) config('ai-manifest.middleware', []))->group(function (): void {
             Route::get(ArdFormat::PFAD_ARD, ArdManifestController::class)->name('ai-manifest.ard');
 
-            if ((bool) config('ai-manifest.ai_catalog_legacy', true)) {
-                Route::get(ArdFormat::PFAD_AI_CATALOG, ArdManifestController::class)->name('ai-manifest.ai-catalog');
-            }
-
             Route::get('/llms.txt', LlmsTxtController::class)->name('ai-manifest.llms-txt');
         });
     }
