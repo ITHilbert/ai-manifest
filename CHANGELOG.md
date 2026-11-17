@@ -18,16 +18,17 @@ Alle wichtigen Änderungen an diesem Paket. Format: [Keep a Changelog](https://k
 ### Geändert
 
 - `php artisan ai-manifest:generate` schreibt `public/.well-known/ard.json` statt `ai-manifest.json`. Die Option `--path` bleibt. Der Befehl meldet die Zahl der Einträge.
-- `cache_ttl` gilt für den ARD-Body. Der Cache-Schlüssel enthält dessen Fingerabdruck, damit eine geänderte Capability sofort wirkt.
+- Der ARD-Body wird bei jedem Abruf frisch gebaut, ohne Cache. Eine geänderte Route oder Config erscheint sofort.
 - `middleware` gilt für alle Routen des Pakets: ARD, Übergangspfad und llms.txt.
 
 ### Entfernt (Breaking)
 
 - Route `GET /.well-known/ai-manifest.json` (Name `ai-manifest`). Sie antwortet mit 404.
+- Config-Schlüssel `cache_ttl` und `ArdManifest::fingerabdruck()`: Der ARD-Cache entfällt. Wer `cache_ttl` in der eigenen Config setzt, kann den Eintrag löschen.
 - Config-Schlüssel `version`, `auth`, `mechanisms`, `rate_limits`, `contact`, `public`.
 - `AiManifestService::toArray()`, `toJson()` und `buildHead()` samt den gleichnamigen Facade-Methoden.
 
-Bestehen bleiben `->aiManifest()` mit allen Settern, `AiManifest::addGenerator`, `clearGenerators` und `getCapabilities`, die Config `name`, `description`, `middleware`, `cache_ttl` sowie der Enum `Mechanism`.
+Bestehen bleiben `->aiManifest()` mit allen Settern, `AiManifest::addGenerator`, `clearGenerators` und `getCapabilities`, die Config `name`, `description` und `middleware` sowie der Enum `Mechanism`.
 
 #### Umstieg von 1.x auf 2.0
 

@@ -52,16 +52,6 @@ final readonly class ArdManifest
     }
 
     /**
-     * Stabiler Fingerabdruck eines Bodys (Teil des Cache-Schlüssels).
-     *
-     * @param  array<string, mixed>  $body
-     */
-    public static function fingerabdruck(array $body): string
-    {
-        return md5(self::json($body));
-    }
-
-    /**
      * @param  array<string, mixed>  $body
      */
     public static function json(array $body, bool $lesbar = false): string
