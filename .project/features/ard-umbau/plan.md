@@ -20,3 +20,11 @@ Abweichung a1ddfc21dcc175947: keine (Fehlalarm: Abweichungen-Zeile des Berichts 
 Annahme im Code: keine
 Echtlauf: browser: Lighthouse 13.6.0 (agentic-browsing) in Chrome 156 gegen den Host-Server Port 8004: ard-schema Score 1 (Antwort {"entries":[]}), llms-txt notApplicable (404 ohne Config). llms.txt mit Beispiel-Config per CLI-Request der Host-App (ohne Server) und Lighthouse-Audit llms-txt: Score 1 (200, text/plain; charset=utf-8). ard.json mit zwei Routen und einem manuellen Eintrag gegen den ARD-Konformitätstest (ConformanceTester aus Lighthouse): 0 Fehler, 0 Warnungen.
 Layout: entfällt (keine sichtbare Darstellung, die Komponente erzeugt nur ein <link> im head)
+
+## Nachbesserung 2026-11-17 (automode): #1444 (sollte-Funde aus Review 0/2)
+Branch `fix/ard-nacharbeit`. Spec-Lücke AK14 (Punkte 1–3) selbst freigegeben; Punkt 4 (Cache ohne Wirkung, AK11 dem Wortlaut nach erfüllt) bleibt: Entscheidung bei Joerg, Task bleibt dafür offen.
+- [x] test-writer a9c3288499f970e4c (AK14) — Tests: `tests/Feature/ArdEintragTest.php`
+- [x] [pro] coder-pro a1b2a3651f87ffedb (AK14) — GATE GRÜN 10:23, Paket 47 Tests grün
+Offener Punkt a1b2a3651f87ffedb: keine
+Abweichung a1b2a3651f87ffedb: keine (Fehlalarm: Abweichungen-Zeile des Berichts lautet „keine“)
+Review: entfällt (Bugfix/Spec-Lücke ohne Sicherheitsbezug, kleine Änderung; Rule agent-lifecycle.md)
