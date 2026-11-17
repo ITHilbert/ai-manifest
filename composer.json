@@ -2,11 +2,14 @@
     "name": "ithilbert/ai-manifest",
     "type": "library",
     "license": "MIT",
-    "description": "AI-Agent Discovery für Laravel – Routes deklarieren ihre Capabilities direkt am Endpunkt via ->aiManifest().",
+    "description": "KI-Agenten-Auffindbarkeit für Laravel – ARD-Manifest (/.well-known/ard.json) aus Routen mit ->aiManifest(), llms.txt und Link-Komponente rel=\"ard\".",
     "keywords": [
         "it-hilbert",
         "laravel",
         "ai-manifest",
+        "ard",
+        "agent-resource-discovery",
+        "llms.txt",
         "discovery",
         "ai-agent"
     ],

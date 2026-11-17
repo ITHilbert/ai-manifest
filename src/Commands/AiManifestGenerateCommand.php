@@ -6,16 +6,17 @@ namespace ITHilbert\AiManifest\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Filesystem\Filesystem;
-use ITHilbert\AiManifest\Services\AiManifestService;
+use ITHilbert\AiManifest\Ard\ArdFormat;
+use ITHilbert\AiManifest\Ard\ArdManifest;
 
 final class AiManifestGenerateCommand extends Command
 {
-    protected $signature = 'ai-manifest:generate {--path= : Zielpfad für das JSON-File (Default: public/.well-known/ai-manifest.json)}';
+    protected $signature = 'ai-manifest:generate {--path= : Zielpfad für das JSON-File (Default: public/.well-known/ard.json)}';
 
-    protected $description = 'Generiert das AI-Manifest als statisches JSON-File.';
+    protected $description = 'Schreibt das ARD-Manifest (ard.json) als statische Datei.';
 
     public function __construct(
-        private readonly AiManifestService $service,
+        private readonly ArdManifest $manifest,
         private readonly Filesystem $filesystem,
     ) {
         parent::__construct();
@@ -23,25 +24,16 @@ final class AiManifestGenerateCommand extends Command
 
     public function handle(): int
     {
-        $this->info('Generiere AI-Manifest...');
+        $this->info('Erzeuge ARD-Manifest ...');
 
         $targetPath = $this->resolveTargetPath();
-        $targetDir = dirname($targetPath);
+        $this->ensureDirectoryExists(dirname($targetPath));
 
-        $this->ensureDirectoryExists($targetDir);
+        $body = $this->manifest->body();
+        $this->filesystem->put($targetPath, ArdManifest::json($body, lesbar: true));
 
-        $json = $this->service->toJson();
-        $capabilities = $this->service->getCapabilities();
-        $count = count($capabilities);
-
-        $this->filesystem->put($targetPath, $json);
-
-        $this->info(sprintf(
-            'Fertig! %s — %d Capabilit%s geschrieben.',
-            $targetPath,
-            $count,
-            $count === 1 ? 'y' : 'ies',
-        ));
+        $count = count($body['entries']);
+        $this->info(sprintf('Fertig: %s — %d %s geschrieben.', $targetPath, $count, $count === 1 ? 'Eintrag' : 'Einträge'));
 
         return self::SUCCESS;
     }
@@ -54,7 +46,7 @@ final class AiManifestGenerateCommand extends Command
             return $pathOption;
         }
 
-        return public_path('.well-known/ai-manifest.json');
+        return public_path(ltrim(ArdFormat::PFAD_ARD, '/'));
     }
 
     private function ensureDirectoryExists(string $directory): void

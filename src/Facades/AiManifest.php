@@ -12,9 +12,8 @@ use ITHilbert\AiManifest\Services\AiManifestService;
  * @method static void addGenerator(callable $generator)
  * @method static void clearGenerators()
  * @method static list<CapabilityEntry> getCapabilities()
- * @method static array<string, mixed> buildHead()
- * @method static array<string, mixed> toArray()
- * @method static string toJson()
+ *
+ * Den Body von /.well-known/ard.json baut ITHilbert\AiManifest\Ard\ArdManifest.
  *
  * @see AiManifestService
  */
