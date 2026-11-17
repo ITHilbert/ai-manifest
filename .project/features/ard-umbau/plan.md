@@ -40,3 +40,4 @@ Abweichung a01bb952e133ca99d: keine (Fehlalarm: Abweichungen-Zeile des Berichts 
 Annahme im Code: keine
 Echtlauf: entfällt (Entfernung von Cache-Code, ohne Oberfläche; Paket-Tests über Host-Testbench grün)
 Review: entfällt (Entfernung eines wirkungslosen Caches, kein Sicherheitsbezug, keine neue Route, unter 50 Zeilen Produktivcode)
+Review: entfällt (reiner Rückbau, keine neue Route, Sicherheit unverändert; Tests grün)

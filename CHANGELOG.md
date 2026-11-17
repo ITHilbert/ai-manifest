@@ -2,6 +2,12 @@
 
 Alle wichtigen Änderungen an diesem Paket. Format: [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), Versionierung: [Semantic Versioning](https://semver.org/lang/de/).
 
+## 2.1.0 – 2026-11-17
+
+### Entfernt
+
+- Übergangspfad `GET /.well-known/ai-catalog.json` (Route `ai-manifest.ai-catalog`, Konstante `ArdFormat::PFAD_AI_CATALOG`) und Config-Schlüssel `ai_catalog_legacy` (env `AI_MANIFEST_LEGACY_AI_CATALOG`).
+
 ## Unveröffentlicht (2.0.0, Breaking)
 
 ### Neu

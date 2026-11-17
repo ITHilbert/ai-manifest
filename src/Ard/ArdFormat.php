@@ -15,7 +15,6 @@ final class ArdFormat
     public const string PFAD_ARD = '/.well-known/ard.json';
 
     /** Übergangspfad, solange PageSpeed Insights noch den alten Namen prüft (Rückbau: #1433). */
-    public const string PFAD_AI_CATALOG = '/.well-known/ai-catalog.json';
 
     /** Content-Type beider Manifest-Pfade (Standard-Medientyp im ARD-Konformitätstest). */
     public const string CONTENT_TYPE = 'application/ai-catalog+json; charset=utf-8';

@@ -9,7 +9,7 @@ use ITHilbert\AiManifest\Ard\ArdFormat;
 use ITHilbert\AiManifest\Ard\ArdManifest;
 
 /**
- * GET /.well-known/ard.json (und Übergangspfad /.well-known/ai-catalog.json).
+ * GET /.well-known/ard.json.
  */
 final class ArdManifestController
 {
