@@ -1,6 +1,7 @@
 # Feature: ARD-Manifest und llms.txt statt eigenem Format
 
-Dashboard-Task #1430 (ai-manifest), Ursprung #1418. Entscheidung: `.project/doku/decisions/0001-ard-statt-eigenem-format.md`. Risiko: kritisch — öffentlich erreichbare Landkarte der Oberfläche, neue Routen, Schnittstellenbruch (Major). Spec selbst freigegeben (automode 2026-11-17-0939).
+Dashboard-Task #1430 (ai-manifest), Ursprung #1418. Entscheidung: `.project/doku/decisions/0001-ard-statt-eigenem-format.md`.
+Risiko: kritisch — öffentlich erreichbare Landkarte der Oberfläche, neue Routen, Schnittstellenbruch (Major). Spec selbst freigegeben (automode 2026-11-17-0939).
 Rückbau: #1433 (PageSpeed Insights bewertet `ard.json`; dann entfällt `/.well-known/ai-catalog.json`)
 
 ## Ausgangslage
